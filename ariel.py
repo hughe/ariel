@@ -32,7 +32,11 @@ config = {
 @app.route('/')
 def index():
     """Serve the main webpage"""
-    return render_template('index.html')
+    if config['mmd_file']:
+        filename = Path(config['mmd_file']).name
+    else:
+        filename = 'No file loaded'
+    return render_template('index.html', filename=filename)
 
 
 @app.route('/mermaid')
@@ -42,6 +46,12 @@ def mermaid():
     Returns 304 Not Modified if the file hasn't changed since last request.
     Uses ETag (filename + mtime) for cache validation.
     """
+    # Check if mmd_file is configured
+    if config['mmd_file'] is None:
+        return jsonify({
+            'error': 'No mermaid file configured'
+        }), 500
+
     mmd_path = Path(config['mmd_file'])
 
     # Check if file exists

@@ -32,10 +32,30 @@
             border: 2px dashed #999;
         }
 
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .page-container {
+            margin: 0 10px;
+        }
+
+        .header {
+            text-align: center;
+        }
+
+        .filename {
+            font-size: 10pt;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
         #diagram-container {
             min-height: 400px;
             padding: 20px 0;
             background: #fff;
+            width: 100%;
         }
 
         .error-message {
@@ -60,30 +80,27 @@
     </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-12">
-                <h1 class="mb-4">
-                    Ariel - Live Mermaid Diagram Viewer
-                    <small class="text-muted fs-6">
-                        <span id="status-indicator" class="status-ok"></span>
-                        <span id="status-text">Connected</span>
-                    </small>
-                </h1>
-            </div>
+    <div class="page-container">
+        <div class="mt-5 header">
+            <h1 class="mb-2">
+                Ariel - Live Mermaid Diagram Viewer
+                <small class="text-muted fs-6">
+                    <span id="status-indicator" class="status-ok"></span>
+                    <span id="status-text">Connected</span>
+                </small>
+            </h1>
+            <div class="filename">{{ filename }}</div>
         </div>
 
-        <div class="row">
-            <div class="col-12">
-                <div id="diagram-container">
-                    <div class="checkerboard">
-                        <span class="text-muted">Loading diagram...</span>
-                    </div>
+        <div>
+            <div id="diagram-container">
+                <div class="checkerboard">
+                    <span class="text-muted">Loading diagram...</span>
                 </div>
+            </div>
 
-                <div id="error-container" class="alert alert-danger error-message" style="display: none;" role="alert">
-                    <strong>Error:</strong> <span id="error-message"></span>
-                </div>
+            <div id="error-container" class="alert alert-danger error-message" style="display: none;" role="alert">
+                <strong>Error:</strong> <span id="error-message"></span>
             </div>
         </div>
     </div>
