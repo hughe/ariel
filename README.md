@@ -6,7 +6,7 @@ A Flask web server for live Mermaid diagram rendering. View and edit Mermaid dia
 
 - **Live Updates**: Automatically refreshes diagrams when `.mmd` files change
 - **HTTP 304 Caching**: Efficient polling with conditional requests
-- **Client-Side Rendering**: Uses mermaid.js to render diagrams as SVG
+- **Client-Side Rendering**: Uses mermaid.js 11.12.1 to render diagrams as SVG
 - **Bootstrap UI**: Clean, responsive interface
 - **Error Handling**: Visual feedback with checkerboard pattern on errors
 - **Auto-Open Browser**: Automatically opens your browser when server starts
@@ -180,8 +180,8 @@ stateDiagram-v2
 
 - `ariel.py` - Flask web server
 - `start_ariel.sh` - Bash startup script
+- `templates/index.html` - Web interface template
 - `diagram.mmd` - Sample Mermaid diagram
-- `demo.html` - Standalone demo page
 - `requirements.txt` - Python dependencies
 - `.gitignore` - Git ignore rules
 
