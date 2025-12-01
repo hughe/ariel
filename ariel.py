@@ -6,7 +6,6 @@ Ariel - A Flask web server for live Mermaid diagram rendering
 import os
 import sys
 import argparse
-import subprocess
 from datetime import datetime
 from pathlib import Path
 from flask import Flask, render_template_string, jsonify, request, make_response
@@ -17,8 +16,6 @@ app = Flask(__name__)
 # Global configuration
 config = {
     'mmd_file': 'diagram.mmd',
-    'cli_program': None,
-    'cli_args': [],
     'last_modified': None,
     'last_content': None
 }
@@ -292,27 +289,6 @@ def mermaid():
         with open(mmd_path, 'r', encoding='utf-8') as f:
             content = f.read()
 
-        # If CLI program is specified, call it
-        if config['cli_program']:
-            try:
-                cmd = [config['cli_program']] + config['cli_args'] + [str(mmd_path)]
-                result = subprocess.run(
-                    cmd,
-                    capture_output=True,
-                    text=True,
-                    timeout=30
-                )
-
-                if result.returncode != 0:
-                    app.logger.warning(
-                        f'CLI program returned non-zero exit code: {result.returncode}\n'
-                        f'stderr: {result.stderr}'
-                    )
-            except subprocess.TimeoutExpired:
-                app.logger.error('CLI program timed out')
-            except Exception as e:
-                app.logger.error(f'Error running CLI program: {str(e)}')
-
         # Update cache
         config['last_modified'] = file_mtime
         config['last_content'] = content
@@ -355,16 +331,6 @@ def main():
         help='Port to bind to (default: 5000)'
     )
     parser.add_argument(
-        '--cli-program',
-        help='Optional CLI program to call when .mmd file changes'
-    )
-    parser.add_argument(
-        '--cli-args',
-        nargs='*',
-        default=[],
-        help='Optional arguments to pass to the CLI program'
-    )
-    parser.add_argument(
         '--debug',
         action='store_true',
         help='Enable debug mode'
@@ -374,8 +340,6 @@ def main():
 
     # Update global config
     config['mmd_file'] = args.file
-    config['cli_program'] = args.cli_program
-    config['cli_args'] = args.cli_args or []
 
     # Check if mermaid file exists
     if not Path(args.file).exists():
@@ -385,8 +349,6 @@ def main():
     print(f'Starting Ariel server...')
     print(f'  Watching file: {args.file}')
     print(f'  Server: http://{args.host}:{args.port}')
-    if args.cli_program:
-        print(f'  CLI program: {args.cli_program} {" ".join(args.cli_args)}')
     print()
 
     # Run the Flask app

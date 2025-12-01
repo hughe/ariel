@@ -9,7 +9,6 @@ A Flask web server for live Mermaid diagram rendering. View and edit Mermaid dia
 - **Client-Side Rendering**: Uses mermaid.js to render diagrams as SVG
 - **Bootstrap UI**: Clean, responsive interface
 - **Error Handling**: Visual feedback with checkerboard pattern on errors
-- **CLI Integration**: Optional support for external CLI programs
 - **Virtual Environment**: Isolated Python dependencies
 
 ## Quick Start
@@ -69,8 +68,6 @@ ARGUMENTS:
 OPTIONS:
   -h, --host HOST         Host to bind to (default: 127.0.0.1)
   -p, --port PORT         Port to bind to (default: 5000)
-  -c, --cli-program CMD   Optional CLI program to call when .mmd file changes
-  -a, --cli-args ARGS     Arguments to pass to the CLI program (use quotes)
   -d, --debug             Enable debug mode
   --help                  Show help message
 ```
@@ -83,9 +80,6 @@ OPTIONS:
 
 # Watch a specific file on custom port
 ./start_ariel.sh my_diagram.mmd -p 8080
-
-# Use with mermaid-cli for validation
-./start_ariel.sh diagram.mmd -c mmdc -a "-i diagram.mmd -o output.svg"
 
 # Enable debug mode
 ./start_ariel.sh diagram.mmd -d
@@ -105,9 +99,6 @@ python ariel.py my_diagram.mmd
 
 # With custom host and port
 python ariel.py diagram.mmd --host 127.0.0.1 --port 5000
-
-# With CLI program
-python ariel.py diagram.mmd --cli-program mmdc --cli-args "-i diagram.mmd"
 
 # Deactivate when done
 deactivate

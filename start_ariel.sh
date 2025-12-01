@@ -10,8 +10,6 @@ set -e
 FILE="diagram.mmd"
 HOST="127.0.0.1"
 PORT="5000"
-CLI_PROGRAM=""
-CLI_ARGS=""
 DEBUG=""
 
 # Color output
@@ -33,8 +31,6 @@ ARGUMENTS:
 OPTIONS:
     -h, --host HOST         Host to bind to (default: 127.0.0.1)
     -p, --port PORT         Port to bind to (default: 5000)
-    -c, --cli-program CMD   Optional CLI program to call when .mmd file changes
-    -a, --cli-args ARGS     Arguments to pass to the CLI program (use quotes)
     -d, --debug             Enable debug mode
     --help                  Show this help message
 
@@ -47,9 +43,6 @@ EXAMPLES:
 
     # Watch a specific file on custom port
     $0 my_diagram.mmd -p 8080
-
-    # Use with a CLI program
-    $0 diagram.mmd -c mmdc -a "-i diagram.mmd -o output.svg"
 
     # Enable debug mode
     $0 diagram.mmd -d
@@ -73,14 +66,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         -p|--port)
             PORT="$2"
-            shift 2
-            ;;
-        -c|--cli-program)
-            CLI_PROGRAM="$2"
-            shift 2
-            ;;
-        -a|--cli-args)
-            CLI_ARGS="$2"
             shift 2
             ;;
         -d|--debug)
@@ -136,14 +121,6 @@ fi
 # Build command
 CMD="$PYTHON_CMD $SCRIPT_DIR/ariel.py \"$FILE\" --host $HOST --port $PORT"
 
-if [ -n "$CLI_PROGRAM" ]; then
-    CMD="$CMD --cli-program \"$CLI_PROGRAM\""
-fi
-
-if [ -n "$CLI_ARGS" ]; then
-    CMD="$CMD --cli-args $CLI_ARGS"
-fi
-
 if [ -n "$DEBUG" ]; then
     CMD="$CMD $DEBUG"
 fi
@@ -152,9 +129,6 @@ fi
 echo -e "${GREEN}Starting Ariel Mermaid Diagram Viewer...${NC}"
 echo -e "File: $FILE"
 echo -e "Server: http://$HOST:$PORT"
-if [ -n "$CLI_PROGRAM" ]; then
-    echo -e "CLI Program: $CLI_PROGRAM $CLI_ARGS"
-fi
 echo ""
 
 # Create a sample diagram if the file doesn't exist
