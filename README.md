@@ -1,16 +1,14 @@
 # Ariel
 
-A Flask web server for live Mermaid diagram rendering. View and edit Mermaid diagrams in real-time with automatic browser updates.
+A quick and dirty Mermaid viewer diagram. Edit your Mermmaids diagram in Emacs, Vi, ... and see them change when you save.
 
 ## Features
 
 - **Live Updates**: Automatically refreshes diagrams when `.mmd` files change
-- **HTTP 304 Caching**: Efficient polling with conditional requests
-- **Client-Side Rendering**: Uses mermaid.js 11.12.1 to render diagrams as SVG
-- **Bootstrap UI**: Clean, responsive interface
-- **Error Handling**: Visual feedback with checkerboard pattern on errors
-- **Auto-Open Browser**: Automatically opens your browser when server starts
-- **Virtual Environment**: Isolated Python dependencies
+- **Client-Side Rendering**: Uses mermaid.js to render diagrams as SVG
+- **Bootstrap UI**: Clean, responsive, minimal interface
+- **See Errors**: Errors displayed in broweser
+- **Auto-Open Browser**: Automatically opens your browser when it starts
 
 ## Quick Start
 
@@ -30,9 +28,6 @@ pip install -r requirements.txt
 ```bash
 # Using the startup script (auto-detects venv)
 ./start_ariel.sh diagram.mmd
-
-# Or with a different file
-./start_ariel.sh my_diagram.mmd
 
 # Or run directly with Python
 python ariel.py diagram.mmd --port 5000
@@ -116,43 +111,7 @@ deactivate
 4. **Browser renders** diagram using mermaid.js as SVG
 5. **On errors**, displays checkerboard pattern and error message
 
-## API Endpoints
-
-### `GET /`
-Serves the main web interface with Bootstrap and mermaid.js integration.
-
-### `GET /mermaid`
-Returns the current Mermaid diagram content as JSON.
-
-**Response (200 OK)**:
-```json
-{
-  "content": "graph TD\n    A --> B",
-  "modified": "Mon, 01 Dec 2025 03:05:19 GMT"
-}
-```
-
-**Response (304 Not Modified)**:
-Returns empty body when file hasn't changed since `If-Modified-Since` header timestamp.
-
-**Response (404 Not Found)**:
-```json
-{
-  "error": "Mermaid file not found: diagram.mmd"
-}
-```
-
 ## Example Diagrams
-
-### Flowchart
-```mermaid
-graph TD
-    A[Start] --> B{Decision}
-    B -->|Yes| C[Action 1]
-    B -->|No| D[Action 2]
-    C --> E[End]
-    D --> E
-```
 
 ### Sequence Diagram
 ```mermaid
