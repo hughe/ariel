@@ -81,7 +81,17 @@
         }
 
         .error-message {
-            margin-top: 15px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .error-message[style*="display: none"] {
+            height: 0;
+            margin: 0;
+            padding: 0;
+            border: 0;
         }
 
         #status-indicator {
@@ -114,14 +124,14 @@
         </div>
 
         <div>
+            <div id="error-container" class="alert alert-danger error-message" style="display: none;" role="alert">
+                <strong>Error:</strong> <span id="error-message"></span>
+            </div>
+
             <div id="diagram-container">
                 <div class="checkerboard">
                     <span class="text-muted">Loading diagram...</span>
                 </div>
-            </div>
-
-            <div id="error-container" class="alert alert-danger error-message" style="display: none;" role="alert">
-                <strong>Error:</strong> <span id="error-message"></span>
             </div>
         </div>
     </div>
