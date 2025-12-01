@@ -214,17 +214,18 @@
                 }
 
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
                 }
 
-                const data = await response.json();
+                const content = await response.text();
 
                 // Update ETag for next request
                 lastETag = response.headers.get('ETag');
 
                 // Render the new diagram
-                if (data.content) {
-                    await renderDiagram(data.content);
+                if (content) {
+                    await renderDiagram(content);
                 } else {
                     throw new Error('No diagram content received');
                 }
