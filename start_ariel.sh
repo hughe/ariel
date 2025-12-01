@@ -99,26 +99,35 @@ if [ ! -f "$SCRIPT_DIR/ariel.py" ]; then
     exit 1
 fi
 
-# Check if Python is available
-if ! command -v python3 &> /dev/null; then
-    echo -e "${RED}Error: python3 is not installed${NC}"
-    exit 1
-fi
-
-# Check if Flask is installed
-if ! python3 -c "import flask" 2>/dev/null; then
-    echo -e "${YELLOW}Warning: Flask is not installed${NC}"
-    echo -e "Install it with: pip install flask"
-    echo -e "Attempting to install Flask..."
-    pip install flask || {
-        echo -e "${RED}Error: Failed to install Flask${NC}"
-        echo -e "Please install Flask manually: pip install flask"
+# Check for and activate virtual environment
+if [ -d "$SCRIPT_DIR/venv" ]; then
+    echo -e "${GREEN}Activating virtual environment...${NC}"
+    source "$SCRIPT_DIR/venv/bin/activate"
+    PYTHON_CMD="$SCRIPT_DIR/venv/bin/python3"
+else
+    # Check if Python is available
+    if ! command -v python3 &> /dev/null; then
+        echo -e "${RED}Error: python3 is not installed${NC}"
         exit 1
-    }
+    fi
+    PYTHON_CMD="python3"
+
+    # Check if Flask is installed
+    if ! python3 -c "import flask" 2>/dev/null; then
+        echo -e "${YELLOW}Warning: Flask is not installed${NC}"
+        echo -e "Install it with: pip install flask"
+        echo -e "Or create a virtual environment: python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt"
+        echo -e "Attempting to install Flask..."
+        pip install flask || {
+            echo -e "${RED}Error: Failed to install Flask${NC}"
+            echo -e "Please install Flask manually: pip install flask"
+            exit 1
+        }
+    fi
 fi
 
 # Build command
-CMD="python3 $SCRIPT_DIR/ariel.py --file \"$FILE\" --host $HOST --port $PORT"
+CMD="$PYTHON_CMD $SCRIPT_DIR/ariel.py --file \"$FILE\" --host $HOST --port $PORT"
 
 if [ -n "$CLI_PROGRAM" ]; then
     CMD="$CMD --cli-program \"$CLI_PROGRAM\""
