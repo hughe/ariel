@@ -135,6 +135,23 @@ stateDiagram-v2
     Updated --> Idle: Rendered
 ```
 
+### Flow Diagram (diagram.mmd)
+```mermaid
+graph TD
+    A[Ariel Server] --> B{Check .mmd file}
+    B -->|Modified| C[Read content]
+    B -->|Not Modified| D[Return 304]
+    C --> E[Call CLI if configured]
+    E --> F[Return diagram content]
+    F --> G[Browser renders with mermaid.js]
+    G --> H[Display SVG diagram]
+    D --> I[Browser keeps current diagram]
+
+    style A fill:#e1f5ff
+    style H fill:#c8e6c9
+    style I fill:#fff9c4
+```
+
 ## Files
 
 - `ariel.py` - Flask web server
