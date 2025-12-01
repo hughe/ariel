@@ -1,13 +1,13 @@
 # Ariel
 
-A quick and dirty Mermaid viewer diagram. Edit your Mermmaids diagram in Emacs, Vi, ... and see them change when you save.
+A quick and dirty Mermaid viewer diagram. Edit your Mermaid diagram in Emacs, Vi, ... and see them change when you save.
 
 ## Features
 
 - **Live Updates**: Automatically refreshes diagrams when `.mmd` files change
 - **Client-Side Rendering**: Uses mermaid.js to render diagrams as SVG
 - **Bootstrap UI**: Clean, responsive, minimal interface
-- **See Errors**: Errors displayed in broweser
+- **See Errors**: Errors displayed in browser
 - **Auto-Open Browser**: Automatically opens your browser when it starts
 
 ## Quick Start
