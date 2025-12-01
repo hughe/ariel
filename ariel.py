@@ -44,34 +44,30 @@ def mermaid():
     """
     Return the mermaid diagram content if the file has been modified.
     Returns 304 Not Modified if the file hasn't changed since last request.
-    Uses ETag (filename + mtime) for cache validation.
+    Uses ETag (content hash) for cache validation.
     """
     # Check if mmd_file is configured
     if config['mmd_file'] is None:
-        return jsonify({
-            'error': 'No mermaid file configured'
-        }), 500
+        return 'No mermaid file configured', 500
 
     mmd_path = Path(config['mmd_file'])
 
     # Check if file exists
     if not mmd_path.exists():
-        return jsonify({
-            'error': f'Mermaid file not found: {config["mmd_file"]}'
-        }), 404
+        return f'Mermaid file not found: {config["mmd_file"]}', 404
 
     # Read the mermaid file
     try:
         with open(mmd_path, 'r', encoding='utf-8') as f:
             content = f.read()
     except Exception as e:
-        return jsonify({'error': f'Failed to read file: {str(e)}'}), 500
+        return f'Failed to read file: {str(e)}', 500
 
     # Get file modification time
     try:
         file_mtime = datetime.fromtimestamp(mmd_path.stat().st_mtime)
     except Exception as e:
-        return jsonify({'error': f'Failed to read file stats: {str(e)}'}), 500
+        return f'Failed to read file stats: {str(e)}', 500
 
     # Create ETag from content hash
     import hashlib
@@ -90,11 +86,9 @@ def mermaid():
     config['last_modified'] = file_mtime
     config['last_content'] = content
 
-    # Return the content
-    response = make_response(jsonify({
-        'content': content,
-        'modified': http_date(file_mtime.timestamp())
-    }))
+    # Return the raw content
+    response = make_response(content)
+    response.headers['Content-Type'] = 'text/plain; charset=utf-8'
     response.headers['ETag'] = etag
     response.headers['Last-Modified'] = http_date(file_mtime.timestamp())
     response.headers['Cache-Control'] = 'no-cache'
