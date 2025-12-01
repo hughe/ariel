@@ -337,8 +337,8 @@ def main():
         description='Ariel - A Flask web server for live Mermaid diagram rendering'
     )
     parser.add_argument(
-        '--file',
-        '-f',
+        'file',
+        nargs='?',
         default='diagram.mmd',
         help='Path to the mermaid (.mmd) file to watch (default: diagram.mmd)'
     )

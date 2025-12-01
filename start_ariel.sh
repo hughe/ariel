@@ -23,12 +23,14 @@ NC='\033[0m' # No Color
 # Function to display usage
 usage() {
     cat << EOF
-Usage: $0 [OPTIONS]
+Usage: $0 [FILE] [OPTIONS]
 
 Starts the Ariel Mermaid diagram viewer server.
 
+ARGUMENTS:
+    FILE                    Path to the .mmd file to watch (default: diagram.mmd)
+
 OPTIONS:
-    -f, --file FILE         Path to the .mmd file to watch (default: diagram.mmd)
     -h, --host HOST         Host to bind to (default: 127.0.0.1)
     -p, --port PORT         Port to bind to (default: 5000)
     -c, --cli-program CMD   Optional CLI program to call when .mmd file changes
@@ -40,26 +42,31 @@ EXAMPLES:
     # Start with default settings
     $0
 
+    # Watch a specific file
+    $0 my_diagram.mmd
+
     # Watch a specific file on custom port
-    $0 -f my_diagram.mmd -p 8080
+    $0 my_diagram.mmd -p 8080
 
     # Use with a CLI program
-    $0 -f diagram.mmd -c mmdc -a "-i diagram.mmd -o output.svg"
+    $0 diagram.mmd -c mmdc -a "-i diagram.mmd -o output.svg"
 
     # Enable debug mode
-    $0 -d
+    $0 diagram.mmd -d
 
 EOF
     exit 1
 }
 
 # Parse command line arguments
+# Check if first argument is the file (doesn't start with -)
+if [[ $# -gt 0 && ! "$1" =~ ^- ]]; then
+    FILE="$1"
+    shift
+fi
+
 while [[ $# -gt 0 ]]; do
     case $1 in
-        -f|--file)
-            FILE="$2"
-            shift 2
-            ;;
         -h|--host)
             HOST="$2"
             shift 2
@@ -127,7 +134,7 @@ else
 fi
 
 # Build command
-CMD="$PYTHON_CMD $SCRIPT_DIR/ariel.py --file \"$FILE\" --host $HOST --port $PORT"
+CMD="$PYTHON_CMD $SCRIPT_DIR/ariel.py \"$FILE\" --host $HOST --port $PORT"
 
 if [ -n "$CLI_PROGRAM" ]; then
     CMD="$CMD --cli-program \"$CLI_PROGRAM\""

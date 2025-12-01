@@ -31,8 +31,11 @@ pip install -r requirements.txt
 # Using the startup script (auto-detects venv)
 ./start_ariel.sh
 
+# Or with a specific file
+./start_ariel.sh my_diagram.mmd
+
 # Or run directly with Python
-python ariel.py --file diagram.mmd --port 5000
+python ariel.py diagram.mmd --port 5000
 ```
 
 ### 3. View in Browser
@@ -58,10 +61,12 @@ Edit `diagram.mmd` in your favorite text editor and watch the diagram update aut
 ### Command Line Options
 
 ```bash
-./start_ariel.sh [OPTIONS]
+./start_ariel.sh [FILE] [OPTIONS]
+
+ARGUMENTS:
+  FILE                    Path to the .mmd file to watch (default: diagram.mmd)
 
 OPTIONS:
-  -f, --file FILE         Path to the .mmd file to watch (default: diagram.mmd)
   -h, --host HOST         Host to bind to (default: 127.0.0.1)
   -p, --port PORT         Port to bind to (default: 5000)
   -c, --cli-program CMD   Optional CLI program to call when .mmd file changes
@@ -73,14 +78,17 @@ OPTIONS:
 ### Examples
 
 ```bash
+# Watch a specific file
+./start_ariel.sh my_diagram.mmd
+
 # Watch a specific file on custom port
-./start_ariel.sh -f my_diagram.mmd -p 8080
+./start_ariel.sh my_diagram.mmd -p 8080
 
 # Use with mermaid-cli for validation
-./start_ariel.sh -f diagram.mmd -c mmdc -a "-i diagram.mmd -o output.svg"
+./start_ariel.sh diagram.mmd -c mmdc -a "-i diagram.mmd -o output.svg"
 
 # Enable debug mode
-./start_ariel.sh -d
+./start_ariel.sh diagram.mmd -d
 ```
 
 ### Running with Python Directly
@@ -89,11 +97,17 @@ OPTIONS:
 # Activate virtual environment first
 source venv/bin/activate
 
-# Run the server
-python ariel.py --file diagram.mmd --host 127.0.0.1 --port 5000
+# Run the server (default file: diagram.mmd)
+python ariel.py
+
+# Run with a specific file
+python ariel.py my_diagram.mmd
+
+# With custom host and port
+python ariel.py diagram.mmd --host 127.0.0.1 --port 5000
 
 # With CLI program
-python ariel.py --file diagram.mmd --cli-program mmdc --cli-args "-i diagram.mmd"
+python ariel.py diagram.mmd --cli-program mmdc --cli-args "-i diagram.mmd"
 
 # Deactivate when done
 deactivate
