@@ -41,14 +41,30 @@
             margin: 0 10px;
         }
 
-        .header {
-            text-align: center;
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+
+        .navbar-left,
+        .navbar-right {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
         }
 
         .filename {
-            font-size: 10pt;
+            color: #212529;
+            font-weight: 500;
+        }
+
+        .status-text-nav {
             color: #6c757d;
-            margin-top: 5px;
+            margin-left: 8px;
         }
 
         #diagram-container {
@@ -81,15 +97,14 @@
 </head>
 <body>
     <div class="page-container">
-        <div class="mt-5 header">
-            <h1 class="mb-2">
-                Ariel - Live Mermaid Diagram Viewer
-                <small class="text-muted fs-6">
-                    <span id="status-indicator" class="status-ok"></span>
-                    <span id="status-text">Connected</span>
-                </small>
-            </h1>
-            <div class="filename">{{ filename }}</div>
+        <div class="navbar">
+            <div class="navbar-left">
+                <span class="filename">{{ filename }}</span>
+            </div>
+            <div class="navbar-right">
+                <span id="status-indicator" class="status-ok"></span>
+                <span id="status-text" class="status-text-nav">Connected</span>
+            </div>
         </div>
 
         <div>
