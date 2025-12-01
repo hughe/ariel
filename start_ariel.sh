@@ -7,7 +7,7 @@
 set -e
 
 # Default values
-FILE="diagram.mmd"
+FILE=""
 HOST="127.0.0.1"
 PORT="5000"
 DEBUG=""
@@ -22,12 +22,12 @@ NC='\033[0m' # No Color
 # Function to display usage
 usage() {
     cat << EOF
-Usage: $0 [FILE] [OPTIONS]
+Usage: $0 FILE [OPTIONS]
 
 Starts the Ariel Mermaid diagram viewer server.
 
 ARGUMENTS:
-    FILE                    Path to the .mmd file to watch (default: diagram.mmd)
+    FILE                    Path to the .mmd file to watch (required)
 
 OPTIONS:
     -h, --host HOST         Host to bind to (default: 127.0.0.1)
@@ -37,13 +37,13 @@ OPTIONS:
     --help                  Show this help message
 
 EXAMPLES:
-    # Start with default settings
-    $0
+    # Watch a file with default settings
+    $0 diagram.mmd
 
-    # Watch a specific file
+    # Watch a different file
     $0 my_diagram.mmd
 
-    # Watch a specific file on custom port
+    # Watch a file on custom port
     $0 my_diagram.mmd -p 8080
 
     # Enable debug mode
@@ -87,6 +87,13 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+# Check if FILE was provided
+if [ -z "$FILE" ]; then
+    echo -e "${RED}Error: FILE argument is required${NC}"
+    echo ""
+    usage
+fi
 
 # Get the directory where this script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

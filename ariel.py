@@ -338,9 +338,7 @@ def main():
     )
     parser.add_argument(
         'file',
-        nargs=1,
-        default=None,
-        help='Path to the mermaid (.mmd) file to watch (default: diagram.mmd)'
+        help='Path to the mermaid (.mmd) file to watch'
     )
     parser.add_argument(
         '--host',

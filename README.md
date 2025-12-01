@@ -29,9 +29,9 @@ pip install -r requirements.txt
 
 ```bash
 # Using the startup script (auto-detects venv)
-./start_ariel.sh
+./start_ariel.sh diagram.mmd
 
-# Or with a specific file
+# Or with a different file
 ./start_ariel.sh my_diagram.mmd
 
 # Or run directly with Python
@@ -54,17 +54,17 @@ Edit `diagram.mmd` in your favorite text editor and watch the diagram update aut
 ### Basic Usage
 
 ```bash
-# Start with default settings (watches diagram.mmd on port 5000)
-./start_ariel.sh
+# Start server to watch a file
+./start_ariel.sh diagram.mmd
 ```
 
 ### Command Line Options
 
 ```bash
-./start_ariel.sh [FILE] [OPTIONS]
+./start_ariel.sh FILE [OPTIONS]
 
 ARGUMENTS:
-  FILE                    Path to the .mmd file to watch (default: diagram.mmd)
+  FILE                    Path to the .mmd file to watch (required)
 
 OPTIONS:
   -h, --host HOST         Host to bind to (default: 127.0.0.1)
@@ -93,10 +93,10 @@ OPTIONS:
 # Activate virtual environment first
 source venv/bin/activate
 
-# Run the server (default file: diagram.mmd)
-python ariel.py
+# Run the server
+python ariel.py diagram.mmd
 
-# Run with a specific file
+# Run with a different file
 python ariel.py my_diagram.mmd
 
 # With custom host and port
