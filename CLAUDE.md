@@ -11,10 +11,10 @@
 ### Core Components
 
 1. **ariel.py** - Flask backend server
-   - Exposes two endpoints: `/` (main page) and `/mermaid` (diagram content)
+   - Exposes two endpoints: `/` (main page) and `/mermaid` (diagram content as plain text)
    - Implements ETag-based caching using MD5 hashes
    - Returns HTTP 304 for unchanged content
-   - Tracks file modification time and content hash
+   - Returns raw `.mmd` file content with proper Content-Type header
 
 2. **templates/index.html** - Frontend interface
    - Polls `/mermaid` endpoint every 1 second
@@ -38,7 +38,7 @@ Browser polls /mermaid every 1s
 Server computes ETag, checks modification time
     ↓
 If unchanged → 304 response (no re-render)
-If changed → JSON with new content + ETag
+If changed → Plain text content + ETag
     ↓
 Mermaid.js renders updated SVG
     ↓
@@ -65,8 +65,9 @@ User sees updated diagram
 
 ### Frontend (index.html)
 - Polling interval: 1000ms (1 second)
-- Error display: Checkerboard pattern with error text
+- Error display: Shows "Error occurred" text and error message alert (no checkerboard pattern)
 - Status indicator: Green dot (success) / Red dot (error)
+- Page title: Shows filename dynamically (e.g., "diagram.mmd - Ariel")
 - Mermaid initialization: `mermaid.initialize({ startOnLoad: false })`
 - Dynamic rendering: `mermaid.run({ nodes: [container] })`
 
@@ -112,8 +113,8 @@ The application uses ETag-based caching to minimize bandwidth and unnecessary re
 - Client only re-renders on 200 response with new content
 
 ### Error Handling
-- File not found: Returns JSON with error message
-- Invalid Mermaid syntax: Client displays error in diagram area
+- File not found: Returns plain text error message with appropriate status code
+- Invalid Mermaid syntax: Client displays error message below diagram area
 - Server errors: Caught and displayed with status indicator
 - Missing dependencies: Launcher script attempts auto-install
 
@@ -166,6 +167,11 @@ python3 ariel.py diagram.mmd --host 127.0.0.1 --port 5000 --debug
 
 ## Recent Changes
 
+- Changed `/mermaid` endpoint to return raw plain text instead of JSON (simpler API)
+- Updated page title to show filename dynamically (e.g., "diagram.mmd - Ariel")
+- Removed checkerboard pattern on errors for cleaner error display
+- Fixed README documentation: using ETag (If-None-Match) not If-Modified-Since
+- Added diagram.mmd example to README
 - Replaced title with navbar showing filename and status
 - Added safety checks for None config values
 - Upgraded Mermaid.js to 11.12.1
