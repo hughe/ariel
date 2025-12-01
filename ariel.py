@@ -85,10 +85,6 @@ HTML_TEMPLATE = """
         .status-error {
             background-color: #dc3545;
         }
-
-        .status-checking {
-            background-color: #ffc107;
-        }
     </style>
 </head>
 <body>
@@ -98,8 +94,8 @@ HTML_TEMPLATE = """
                 <h1 class="mb-4">
                     Ariel - Live Mermaid Diagram Viewer
                     <small class="text-muted fs-6">
-                        <span id="status-indicator" class="status-checking"></span>
-                        <span id="status-text">Initializing...</span>
+                        <span id="status-indicator" class="status-ok"></span>
+                        <span id="status-text">Connected</span>
                     </small>
                 </h1>
             </div>
@@ -156,10 +152,6 @@ HTML_TEMPLATE = """
                     statusIndicator.className = 'status-error';
                     statusText.textContent = 'Error';
                     break;
-                case 'checking':
-                    statusIndicator.className = 'status-checking';
-                    statusText.textContent = 'Checking...';
-                    break;
             }
         }
 
@@ -167,6 +159,14 @@ HTML_TEMPLATE = """
             const diagramContainer = document.getElementById('diagram-container');
 
             try {
+                // Save current scroll position and container height
+                const scrollX = window.scrollX;
+                const scrollY = window.scrollY;
+                const currentHeight = diagramContainer.offsetHeight;
+
+                // Preserve container height to prevent layout shift
+                diagramContainer.style.minHeight = `${currentHeight}px`;
+
                 // Clear previous content
                 diagramContainer.innerHTML = '';
 
@@ -181,6 +181,12 @@ HTML_TEMPLATE = """
                     querySelector: '.mermaid',
                 });
 
+                // Remove min-height after rendering to allow natural sizing
+                diagramContainer.style.minHeight = '';
+
+                // Restore scroll position
+                window.scrollTo(scrollX, scrollY);
+
                 clearError();
                 updateStatus('ok');
             } catch (error) {
@@ -190,8 +196,6 @@ HTML_TEMPLATE = """
         }
 
         async function checkForUpdates() {
-            updateStatus('checking');
-
             try {
                 const headers = {};
                 if (lastModified) {
@@ -201,8 +205,7 @@ HTML_TEMPLATE = """
                 const response = await fetch('/mermaid', { headers });
 
                 if (response.status === 304) {
-                    // Not modified
-                    updateStatus('ok');
+                    // Not modified - keep status as is (should already be 'ok')
                     return;
                 }
 
