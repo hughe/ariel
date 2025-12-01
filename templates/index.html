@@ -74,6 +74,12 @@
             width: 100%;
         }
 
+        #diagram-container.error-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .error-message {
             margin-top: 15px;
         }
@@ -133,6 +139,7 @@
 
             errorMessage.textContent = message;
             errorContainer.style.display = 'block';
+            diagramContainer.className = 'error-state';
             diagramContainer.innerHTML = '<span class="text-muted">Error occurred</span>';
             statusIndicator.className = 'status-error';
             statusText.textContent = 'Error';
@@ -140,7 +147,9 @@
 
         function clearError() {
             const errorContainer = document.getElementById('error-container');
+            const diagramContainer = document.getElementById('diagram-container');
             errorContainer.style.display = 'none';
+            diagramContainer.className = '';
         }
 
         function updateStatus(status) {
