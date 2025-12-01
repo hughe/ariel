@@ -117,7 +117,7 @@ HTML_TEMPLATE = """
     </div>
 
     <script>
-        let lastModified = null;
+        let lastETag = null;
         let pollInterval = null;
 
         function showError(message) {
@@ -198,8 +198,8 @@ HTML_TEMPLATE = """
         async function checkForUpdates() {
             try {
                 const headers = {};
-                if (lastModified) {
-                    headers['If-Modified-Since'] = lastModified;
+                if (lastETag) {
+                    headers['If-None-Match'] = lastETag;
                 }
 
                 const response = await fetch('/mermaid', { headers });
@@ -215,8 +215,8 @@ HTML_TEMPLATE = """
 
                 const data = await response.json();
 
-                // Update last modified time
-                lastModified = response.headers.get('Last-Modified');
+                // Update ETag for next request
+                lastETag = response.headers.get('ETag');
 
                 // Render the new diagram
                 if (data.content) {
@@ -263,6 +263,7 @@ def mermaid():
     """
     Return the mermaid diagram content if the file has been modified.
     Returns 304 Not Modified if the file hasn't changed since last request.
+    Uses ETag (filename + mtime) for cache validation.
     """
     mmd_path = Path(config['mmd_file'])
 
@@ -272,44 +273,46 @@ def mermaid():
             'error': f'Mermaid file not found: {config["mmd_file"]}'
         }), 404
 
+    # Read the mermaid file
+    try:
+        with open(mmd_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+    except Exception as e:
+        return jsonify({'error': f'Failed to read file: {str(e)}'}), 500
+
     # Get file modification time
     try:
         file_mtime = datetime.fromtimestamp(mmd_path.stat().st_mtime)
     except Exception as e:
         return jsonify({'error': f'Failed to read file stats: {str(e)}'}), 500
 
-    # Check If-Modified-Since header
-    if_modified_since = request.headers.get('If-Modified-Since')
-    if if_modified_since:
-        if_modified_since_dt = parse_date(if_modified_since)
-        if if_modified_since_dt and file_mtime.timestamp() <= if_modified_since_dt.timestamp():
-            # File hasn't been modified
-            response = make_response('', 304)
-            response.headers['Last-Modified'] = http_date(file_mtime.timestamp())
-            return response
+    # Create ETag from content hash
+    import hashlib
+    etag = f'"{hashlib.md5(content.encode()).hexdigest()}"'
 
-    # File has been modified or first request
-    try:
-        # Read the mermaid file
-        with open(mmd_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-
-        # Update cache
-        config['last_modified'] = file_mtime
-        config['last_content'] = content
-
-        # Return the content
-        response = make_response(jsonify({
-            'content': content,
-            'modified': http_date(file_mtime.timestamp())
-        }))
+    # Check If-None-Match header (ETag validation)
+    if_none_match = request.headers.get('If-None-Match')
+    if if_none_match and if_none_match == etag:
+        # Content hasn't changed
+        response = make_response('', 304)
+        response.headers['ETag'] = etag
         response.headers['Last-Modified'] = http_date(file_mtime.timestamp())
-        response.headers['Cache-Control'] = 'no-cache'
-
         return response
 
-    except Exception as e:
-        return jsonify({'error': f'Failed to read file: {str(e)}'}), 500
+    # Update cache
+    config['last_modified'] = file_mtime
+    config['last_content'] = content
+
+    # Return the content
+    response = make_response(jsonify({
+        'content': content,
+        'modified': http_date(file_mtime.timestamp())
+    }))
+    response.headers['ETag'] = etag
+    response.headers['Last-Modified'] = http_date(file_mtime.timestamp())
+    response.headers['Cache-Control'] = 'no-cache'
+
+    return response
 
 
 def open_browser(url, delay=1.5):
@@ -335,8 +338,8 @@ def main():
     )
     parser.add_argument(
         'file',
-        nargs='?',
-        default='diagram.mmd',
+        nargs=1,
+        default=None,
         help='Path to the mermaid (.mmd) file to watch (default: diagram.mmd)'
     )
     parser.add_argument(
@@ -369,8 +372,8 @@ def main():
 
     # Check if mermaid file exists
     if not Path(args.file).exists():
-        print(f'Warning: Mermaid file not found: {args.file}', file=sys.stderr)
-        print(f'The server will start but return 404 until the file is created.', file=sys.stderr)
+        print(f'Error: Mermaid file not found: {args.file}', file=sys.stderr)
+        sys.exit(1)
 
     # Construct URL
     url = f'http://{args.host}:{args.port}'
