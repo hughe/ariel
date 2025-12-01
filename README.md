@@ -104,12 +104,12 @@ deactivate
 ## How It Works
 
 1. **Server watches** the `.mmd` file for modifications
-2. **Browser polls** `/mermaid` endpoint every second with `If-Modified-Since` header
+2. **Browser polls** `/mermaid` endpoint every second with `If-None-Match` header (ETag)
 3. **Server returns**:
-   - HTTP 304 if file unchanged (efficient caching)
+   - HTTP 304 if file unchanged (efficient caching using ETag comparison)
    - New diagram content if file modified
 4. **Browser renders** diagram using mermaid.js as SVG
-5. **On errors**, displays checkerboard pattern and error message
+5. **On errors**, displays error message
 
 ## Example Diagrams
 
