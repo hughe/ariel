@@ -6,6 +6,8 @@ Ariel - A Flask web server for live Mermaid diagram rendering
 import os
 import sys
 import argparse
+import subprocess
+import threading
 from datetime import datetime
 from pathlib import Path
 from flask import Flask, render_template_string, jsonify, request, make_response
@@ -307,6 +309,22 @@ def mermaid():
         return jsonify({'error': f'Failed to read file: {str(e)}'}), 500
 
 
+def open_browser(url, delay=1.5):
+    """Open web browser using the system's open command"""
+    import time
+    time.sleep(delay)
+    try:
+        # Use platform-specific open command
+        if sys.platform == 'darwin':  # macOS
+            subprocess.run(['open', url], check=False)
+        elif sys.platform == 'linux':  # Linux
+            subprocess.run(['xdg-open', url], check=False)
+        elif sys.platform == 'win32':  # Windows
+            subprocess.run(['start', url], shell=True, check=False)
+    except Exception as e:
+        print(f'Warning: Could not open browser: {e}', file=sys.stderr)
+
+
 def main():
     """Main entry point"""
     parser = argparse.ArgumentParser(
@@ -335,6 +353,11 @@ def main():
         action='store_true',
         help='Enable debug mode'
     )
+    parser.add_argument(
+        '--no-browser',
+        action='store_true',
+        help='Do not open browser automatically'
+    )
 
     args = parser.parse_args()
 
@@ -346,10 +369,19 @@ def main():
         print(f'Warning: Mermaid file not found: {args.file}', file=sys.stderr)
         print(f'The server will start but return 404 until the file is created.', file=sys.stderr)
 
+    # Construct URL
+    url = f'http://{args.host}:{args.port}'
+
     print(f'Starting Ariel server...')
     print(f'  Watching file: {args.file}')
-    print(f'  Server: http://{args.host}:{args.port}')
+    print(f'  Server: {url}')
+    if not args.no_browser:
+        print(f'  Opening browser...')
     print()
+
+    # Open browser in background thread
+    if not args.no_browser:
+        threading.Thread(target=open_browser, args=(url,), daemon=True).start()
 
     # Run the Flask app
     app.run(

@@ -9,6 +9,7 @@ A Flask web server for live Mermaid diagram rendering. View and edit Mermaid dia
 - **Client-Side Rendering**: Uses mermaid.js to render diagrams as SVG
 - **Bootstrap UI**: Clean, responsive interface
 - **Error Handling**: Visual feedback with checkerboard pattern on errors
+- **Auto-Open Browser**: Automatically opens your browser when server starts
 - **Virtual Environment**: Isolated Python dependencies
 
 ## Quick Start
@@ -39,7 +40,7 @@ python ariel.py diagram.mmd --port 5000
 
 ### 3. View in Browser
 
-Open your browser and navigate to:
+The browser will open automatically! If not, navigate to:
 ```
 http://127.0.0.1:5000
 ```
@@ -69,6 +70,7 @@ OPTIONS:
   -h, --host HOST         Host to bind to (default: 127.0.0.1)
   -p, --port PORT         Port to bind to (default: 5000)
   -d, --debug             Enable debug mode
+  --no-browser            Do not open browser automatically
   --help                  Show help message
 ```
 

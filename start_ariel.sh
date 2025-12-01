@@ -11,6 +11,7 @@ FILE="diagram.mmd"
 HOST="127.0.0.1"
 PORT="5000"
 DEBUG=""
+NO_BROWSER=""
 
 # Color output
 RED='\033[0;31m'
@@ -32,6 +33,7 @@ OPTIONS:
     -h, --host HOST         Host to bind to (default: 127.0.0.1)
     -p, --port PORT         Port to bind to (default: 5000)
     -d, --debug             Enable debug mode
+    --no-browser            Do not open browser automatically
     --help                  Show this help message
 
 EXAMPLES:
@@ -70,6 +72,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         -d|--debug)
             DEBUG="--debug"
+            shift
+            ;;
+        --no-browser)
+            NO_BROWSER="--no-browser"
             shift
             ;;
         --help)
@@ -123,6 +129,10 @@ CMD="$PYTHON_CMD $SCRIPT_DIR/ariel.py \"$FILE\" --host $HOST --port $PORT"
 
 if [ -n "$DEBUG" ]; then
     CMD="$CMD $DEBUG"
+fi
+
+if [ -n "$NO_BROWSER" ]; then
+    CMD="$CMD $NO_BROWSER"
 fi
 
 # Display startup information
